@@ -13,6 +13,10 @@ const app = express()
 app.use(cors())
 app.use(bodyParser.json())
 
+app.get('/', (req, res) => {
+  res.send("hello from database")
+})
+
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
   const volunteerCollection = client.db("volunteerNetwork").collection("userWorks");
