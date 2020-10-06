@@ -20,6 +20,7 @@ app.get('/', (req, res) => {
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
   const volunteerCollection = client.db("volunteerNetwork").collection("userWorks");
+  const volunteerWorkCollection = client.db("volunteerNetwork").collection("allVolunteerWork");
 
   app.post('/addWork', (req, res) => {
       const userWork = req.body;
@@ -30,7 +31,6 @@ client.connect(err => {
   })
   
   app.get('/events', (req, res) => {
-    // console.log(req.query.email)
     volunteerCollection.find({email: req.query.email})
     .toArray((err, result) => {
       res.send(result);
@@ -39,10 +39,25 @@ client.connect(err => {
   })
 
   app.delete('/delete/:id', (req, res) => {
-    // console.log(req.params.id);
     volunteerCollection.deleteOne({_id: ObjectId(req.params.id)})
     .then(result => {
       res.send(result.deletedCount > 0);
+    })
+  })
+
+  app.post('/allWork', (req, res) => {
+    const allWork = req.body;
+    volunteerWorkCollection.insertMany(allWork)
+    .then(result => {
+      console.log(result.insertedCount);
+      res.send(result.insertedCount);
+    })
+  })
+
+  app.get('/allVolunteerWork', (req, res) => {
+    volunteerWorkCollection.find({})
+    .toArray((err, documents) => {
+      res.send(documents)
     })
   })
   
