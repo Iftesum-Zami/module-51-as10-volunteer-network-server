@@ -9,9 +9,9 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 
 const port = 5000
 
-const app = express()
-app.use(cors())
-app.use(bodyParser.json())
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
   res.send("hello from database")
@@ -22,24 +22,23 @@ client.connect(err => {
   const volunteerCollection = client.db("volunteerNetwork").collection("userWorks");
   const volunteerWorkCollection = client.db("volunteerNetwork").collection("allVolunteerWork");
 
-  app.post('/addWork', (req, res) => {
-      const userWork = req.body;
-      volunteerCollection.insertOne(userWork)
-      .then(result => {
-          res.send(result.insertedCount > 0);
-      })
+  app.post('/addEvent', (req, res) => {
+    const newEvent = req.body;
+    volunteerCollection.insertOne(newEvent)
+    .then(result => {
+      res.send(result.insertedCount > 0);
+    })
   })
   
   app.get('/events', (req, res) => {
     volunteerCollection.find({email: req.query.email})
     .toArray((err, result) => {
       res.send(result);
-      // res.redirect('/');
     })
   })
 
   app.delete('/delete/:id', (req, res) => {
-    volunteerCollection.deleteOne({_id: ObjectId(req.params.id)})
+    volunteerCollection.deleteOne({_id: req.params.id})
     .then(result => {
       res.send(result.deletedCount > 0);
     })
@@ -49,7 +48,6 @@ client.connect(err => {
     const allWork = req.body;
     volunteerWorkCollection.insertMany(allWork)
     .then(result => {
-      console.log(result.insertedCount);
       res.send(result.insertedCount);
     })
   })
